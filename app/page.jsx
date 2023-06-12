@@ -2,6 +2,12 @@
 import Image from "next/image";
 import { Inter, Poppins } from "next/font/google";
 import user from "../public/user.png";
+import user1 from "../public/user1.jpg";
+import user2 from "../public/user2.jpeg";
+import user3 from "../public/user3.jpeg";
+import user4 from "../public/user4.jpg";
+import user5 from "../public/user5.jpeg";
+import user6 from "../public/user6.jpg";
 import postImg from "../public/post.png";
 import Modal from "@/components/Modal";
 import { useEffect, useState } from "react";
@@ -205,8 +211,8 @@ export default function Home() {
               <>
                 <div className="mb-12 w-full text-center">
                   <div className="w-full border-b-2 ">
-                    <button className="text-gray-900 w-full capitalize font-bold">
-                      Create
+                    <button className="text-gray-50 w-full capitalize font-bold py-1">
+                      Create new post
                     </button>
                   </div>
                   <div className="input px-60 pb-12 pt-44 flex flex-col items-center">
@@ -559,7 +565,13 @@ export default function Home() {
           </ul>
         </div>
         <div className="profile flex gap-5 items-center space-between">
-          <Image src={user} alt="user" width={30} height={30} />
+          <Image
+            src={user1}
+            alt="user"
+            className="rounded-full"
+            width={30}
+            height={30}
+          />
           <a href="">Profile</a>
         </div>
         <div className="menu_icon flex gap-5 mt-20 items-center space-between">
@@ -617,9 +629,9 @@ export default function Home() {
               <div className="friends flex justify-center items-center bg-gradient-to-r from-red-800 via-pink-700 to-yellow-500 border-white p-0.5 rounded-full  ">
                 <Image
                   width={63}
-                  height={40}
-                  className="border-2 border-gray-900 rounded-full"
-                  src={user}
+                  height={63}
+                  className="border-2 w-18 h-18 border-gray-900 rounded-full"
+                  src={user1}
                   alt="user"
                 />
               </div>
@@ -629,9 +641,9 @@ export default function Home() {
               <div className="friends flex justify-center items-center bg-gradient-to-r from-red-800 via-pink-700 to-yellow-500 border-white p-0.5 rounded-full  ">
                 <Image
                   width={63}
-                  height={53}
-                  className="border-2 border-gray-900 rounded-full"
-                  src={user}
+                  height={63}
+                  className="border-2 h-16 w-16 border-gray-900 rounded-full"
+                  src={user6}
                   alt="user"
                 />
               </div>
@@ -641,9 +653,9 @@ export default function Home() {
               <div className="friends flex justify-center items-center bg-gradient-to-r from-red-800 via-pink-700 to-yellow-500 border-white p-0.5 rounded-full  ">
                 <Image
                   width={63}
-                  height={53}
-                  className="border-2 border-gray-900 rounded-full"
-                  src={user}
+                  height={63}
+                  className="border-2 h-16 w-16 border-gray-900 rounded-full"
+                  src={user2}
                   alt="user"
                 />
               </div>
@@ -653,9 +665,9 @@ export default function Home() {
               <div className="friends flex justify-center items-center bg-gradient-to-r from-red-800 via-pink-700 to-yellow-500 border-white p-0.5 rounded-full  ">
                 <Image
                   width={63}
-                  height={53}
-                  className="border-2 border-gray-900 rounded-full"
-                  src={user}
+                  height={63}
+                  className="border-2 h-16 w-16 border-gray-900 rounded-full"
+                  src={user3}
                   alt="user"
                 />
               </div>
@@ -665,9 +677,9 @@ export default function Home() {
               <div className="friends flex justify-center items-center bg-gradient-to-r from-red-800 via-pink-700 to-yellow-500 border-white p-0.5 rounded-full  ">
                 <Image
                   width={63}
-                  height={53}
-                  className="border-2 border-gray-900 rounded-full"
-                  src={user}
+                  height={63}
+                  className="border-2 h-16 w-16 border-gray-900 rounded-full"
+                  src={user4}
                   alt="user"
                 />
               </div>
@@ -677,9 +689,9 @@ export default function Home() {
               <div className="friends flex justify-center items-center bg-gradient-to-r from-red-800 via-pink-700 to-yellow-500 border-white p-0.5 rounded-full  ">
                 <Image
                   width={63}
-                  height={53}
-                  className="border-2 border-gray-900 rounded-full"
-                  src={user}
+                  height={63}
+                  className="border-2 h-16 w-16 border-gray-900 rounded-full"
+                  src={user5}
                   alt="user"
                 />
               </div>
@@ -689,8 +701,8 @@ export default function Home() {
               <div className="friends flex justify-center items-center bg-gradient-to-r from-red-800 via-pink-700 to-yellow-500 border-white p-0.5 rounded-full  ">
                 <Image
                   width={63}
-                  height={53}
-                  className="border-2 border-gray-900 rounded-full"
+                  height={63}
+                  className="border-2 h-16 w-16 border-gray-900 rounded-full"
                   src={user}
                   alt="user"
                 />
@@ -709,7 +721,13 @@ export default function Home() {
                     <div className="user_datials flex  ">
                       <div className="user flex w-full justify-between">
                         <div className="post_user flex gap-3">
-                          <Image src={user} width={50} height={50} alt="user" />
+                          <Image
+                            src={user1}
+                            width={50}
+                            height={50}
+                            className="rounded-full"
+                            alt="user"
+                          />
                           <div className="username_time">
                             <p>
                               mohammad0019 <span>.1h</span>
@@ -884,7 +902,13 @@ export default function Home() {
           <div className="user">
             <div className="user_datials gap-20 justify-between flex">
               <div className="flex items-center gap-5">
-                <Image width={80} height={80} src={user} alt="User" />
+                <Image
+                  width={80}
+                  height={80}
+                  src={user1}
+                  className="rounded-full"
+                  alt="User"
+                />
                 <div className="datils ">
                   <p className="text-md">Ashraful009</p>
                   <p className="text-md">Asraful Alam</p>
@@ -902,7 +926,13 @@ export default function Home() {
             </div>
             <div className=" my-2 user_datials gap-20 flex justify-between">
               <div className="flex items-center gap-5 ">
-                <Image width={50} height={50} src={user} alt="User" />
+                <Image
+                  width={50}
+                  height={50}
+                  className="w-12 h-12 rounded-full"
+                  src={user1}
+                  alt="User"
+                />
                 <div className="datils ">
                   <p>Ashraful009</p>
                   <p>Asraful Alam</p>
@@ -914,7 +944,13 @@ export default function Home() {
             </div>
             <div className=" my-2 user_datials gap-20 flex justify-between">
               <div className="flex items-center gap-5 ">
-                <Image width={50} height={50} src={user} alt="User" />
+                <Image
+                  width={50}
+                  height={50}
+                  className="w-12 h-12 rounded-full"
+                  src={user2}
+                  alt="User"
+                />
                 <div className="datils ">
                   <p>Ashraful009</p>
                   <p>Asraful Alam</p>
@@ -926,7 +962,13 @@ export default function Home() {
             </div>
             <div className=" my-2 user_datials gap-20 flex justify-between">
               <div className="flex items-center gap-5 ">
-                <Image width={50} height={50} src={user} alt="User" />
+                <Image
+                  width={50}
+                  height={50}
+                  className="w-12 h-12 rounded-full"
+                  src={user3}
+                  alt="User"
+                />
                 <div className="datils ">
                   <p>Ashraful009</p>
                   <p>Asraful Alam</p>
@@ -938,7 +980,13 @@ export default function Home() {
             </div>
             <div className=" my-2 user_datials gap-20 flex justify-between">
               <div className="flex items-center gap-5 ">
-                <Image width={50} height={50} src={user} alt="User" />
+                <Image
+                  width={50}
+                  height={50}
+                  className="w-12 h-12 rounded-full"
+                  src={user4}
+                  alt="User"
+                />
                 <div className="datils ">
                   <p>Ashraful009</p>
                   <p>Asraful Alam</p>
@@ -950,7 +998,13 @@ export default function Home() {
             </div>
             <div className=" my-2 user_datials gap-20 flex justify-between">
               <div className="flex items-center gap-5 ">
-                <Image width={50} height={50} src={user} alt="User" />
+                <Image
+                  width={50}
+                  height={50}
+                  className="w-12 h-12 rounded-full"
+                  src={user5}
+                  alt="User"
+                />
                 <div className="datils ">
                   <p>Ashraful009</p>
                   <p>Asraful Alam</p>
@@ -962,7 +1016,13 @@ export default function Home() {
             </div>
             <div className="user_datials gap-20 flex justify-between">
               <div className="flex items-center justify-between gap-5 ">
-                <Image width={50} height={50} src={user} alt="User" />
+                <Image
+                  width={50}
+                  height={50}
+                  className="w-12 h-12 rounded-full"
+                  src={user6}
+                  alt="User"
+                />
                 <div className="datils ">
                   <p>Ashraful009</p>
                   <p>Asraful Alam</p>
