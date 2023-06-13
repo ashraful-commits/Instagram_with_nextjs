@@ -8,14 +8,15 @@ import user3 from "../public/user3.jpeg";
 import user4 from "../public/user4.jpg";
 import user5 from "../public/user5.jpeg";
 import user6 from "../public/user6.jpg";
+import loadingImag from "../public/final (2).gif";
 import postImg from "../public/post.png";
 import Modal from "@/components/Modal";
-import { useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createPost, deletePost, editPost, getAllpost } from "./postapi";
 import { getAllState } from "./postSlice";
 import axios from "axios";
-
+import swal from "sweetalert";
 export const metadata = {
   title: "Home",
   description: "Home is here",
@@ -30,8 +31,8 @@ export default function Home() {
   const [input, setInput] = useState({
     caption: "",
   });
-  const { post } = useSelector(getAllState);
-
+  const { post, loading } = useSelector(getAllState);
+  console.log(loading);
   const dispatch = useDispatch();
 
   //=================================== handle photo
@@ -55,8 +56,27 @@ export default function Home() {
   };
   //=================================== handle delete
   const handleDelete = () => {
-    dispatch(deletePost(dataId));
-    setOption(false);
+    swal({
+      title: "Are you sure?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        if (loading) {
+          swal("Post deleted!", {
+            icon: "success",
+          });
+        }
+        dispatch(deletePost(dataId));
+        setOption(false);
+        setDataid(null);
+      } else {
+        if (loading) {
+          swal("Post safe !");
+        }
+      }
+    });
   };
 
   //=================================== handle edit
@@ -83,9 +103,16 @@ export default function Home() {
           },
         })
       );
+
       setPrview(null);
       setShow(false);
       setDataid(null);
+      setInput((prevState) => ({
+        ...prevState,
+        caption: "",
+      }));
+
+      swal("Hi!", "Edit post Successfull !", "success");
     } else {
       const formData = new FormData();
       formData.append("file", photo);
@@ -93,14 +120,21 @@ export default function Home() {
       formData.append("upload_preset", "shop_api");
       const url = "https://api.cloudinary.com/v1_1/ds9mljkgj/image/upload";
       await axios.post(url, formData).then((res) => {
-        console.log(res.data);
         dispatch(
           createPost({
             caption: input.caption,
             photo: `${res.data.secure_url}`,
           })
         );
+        setInput((prevState) => ({
+          ...prevState,
+          caption: "",
+        }));
+        setDataid(null);
+        setPrview(null);
         setShow(false);
+
+        swal("Hi!", "You posted Successfully !", "success");
       });
     }
   };
@@ -109,36 +143,57 @@ export default function Home() {
     dispatch(getAllpost());
   }, [dispatch]);
   return (
-    <div className="container-fluid bg-black right-0 text-white w-screen h-auto relative z-0 flex">
+    <div className="container-fluid bg-black right-0 text-white w-screen  min-h-screen h-auto relative z-0 flex">
+      {loading && (
+        <Modal setShow={setShow} preview={preview} size={size}>
+          <div className="p-52 bg-black">
+            <Image
+              alt="gif loading"
+              src={loadingImag}
+              width={100}
+              height={100}
+              className="z-100"
+            />
+          </div>
+        </Modal>
+      )}
       {show && (
         <Modal size={size} setShow={setShow} preview={preview}>
           <form
-            className="flex justify-center  w-full"
+            className="flex w-full h-full justify-center"
             onSubmit={handleSubmite}
             action=""
           >
             {preview ? (
               <>
-                <div className="img_share w-full">
-                  <div className="text-center w-full border-b-2">
-                    <button className="font-bold  capitalize ">Share</button>
+                <div className="img_share w-full h-full ">
+                  <div className="text-center border-b-2">
+                    <button className="font-bold capitalize ">Share</button>
                   </div>
-                  <div className="next w-42 flex">
-                    <Image width={700} height={500} src={preview} alt="" />
-                    <div className="w-full px-2">
-                      <div className="usr flex gap-3">
+                  <div className="next w-full h-full flex">
+                    <Image
+                      width={400}
+                      height={400}
+                      className=" object-contain"
+                      src={preview}
+                      alt=""
+                    />
+                    <div className="w-42 px-2">
+                      <div className="usr flex w-42 h-42 overflow-hidden gap-3">
                         <Image src={user} width={30} height={30} alt="post" />
                         <p>Username</p>
                       </div>
-                      <input
+                      <textarea
                         type="text"
                         placeholder="Write a caption.."
                         name="caption"
                         onChange={handleInput}
                         value={input.caption}
+                        cols={20}
+                        rows={2}
                         id=""
-                        className="mb-10 text-gray-800 pb-20 my-3"
-                      />
+                        className="mb-10 text-gray-800 px-2 my-3"
+                      ></textarea>
                       <div className="smile flex my-2 justify-between">
                         <svg
                           aria-label="Emoji"
@@ -274,7 +329,7 @@ export default function Home() {
           </div>
         </Modal>
       )}
-      <div className="left_section fixed flex flex-col gap-16 border w-2/12 h-screen p-4 content-between border-gray-700 ">
+      <div className="left_section fixed flex flex-col gap-10 border w-2/12 h-screen p-4 content-between border-gray-700 ">
         <div className="logo mt-12">
           <svg
             aria-label="Instagram"
@@ -296,7 +351,7 @@ export default function Home() {
         </div>
         <div className="menu">
           <ul className="flex flex-col gap-8">
-            <li className="flex gap-5 items-center space-between">
+            <li className="  flex gap-5 items-center space-between   hover:bg-gray-800 rounded-full p-2 transition-all">
               <svg
                 aria-label="Home"
                 className=""
@@ -311,7 +366,7 @@ export default function Home() {
               </svg>
               <a>Home</a>
             </li>
-            <li className="flex gap-5 items-center space-between">
+            <li className="  flex gap-5 items-center space-between  hover:bg-gray-800 rounded-full p-2 transition-all">
               <svg
                 aria-label="Search"
                 className=""
@@ -344,7 +399,7 @@ export default function Home() {
               </svg>
               <a>Search</a>
             </li>
-            <li className="flex gap-5 items-center space-between">
+            <li className="  flex gap-5 items-center space-between  hover:bg-gray-800 rounded-full p-2 transition-all">
               <svg
                 aria-label="Explore"
                 class="_ab6-"
@@ -380,7 +435,7 @@ export default function Home() {
               </svg>
               <a href="">Explore</a>
             </li>
-            <li className="flex gap-5 items-center space-between">
+            <li className="  flex gap-5 items-center space-between  hover:bg-gray-800 rounded-full p-2 transition-all">
               <svg
                 aria-label="Reels"
                 class="_ab6-"
@@ -438,38 +493,39 @@ export default function Home() {
               </svg>
               <a href="">Reels</a>
             </li>
-            <li className="flex gap-5 items-center space-between">
+            <li className="  flex gap-5 items-center space-between  hover:bg-gray-800 rounded-full p-2 transition-all">
               <svg
-                aria-label="Direct"
-                className=""
-                color="rgb(0, 0, 0)"
-                fill="#fff"
+                aria-label="Share Post"
+                class="x1lliihq x1n2onr6"
+                color="rgb(168, 168, 168)"
+                fill="rgb(168, 168, 168)"
                 height="24"
                 role="img"
                 viewBox="0 0 24 24"
                 width="24"
               >
+                <title>Share Post</title>
                 <line
-                  fill="#fff"
+                  fill="none"
                   stroke="currentColor"
-                  strokeLinejoin="round"
-                  strokeidth="2"
+                  stroke-linejoin="round"
+                  stroke-width="2"
                   x1="22"
                   x2="9.218"
                   y1="3"
                   y2="10.083"
                 ></line>
                 <polygon
-                  fill="#fff"
+                  fill="none"
                   points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"
                   stroke="currentColor"
-                  strokeLinejoin="round"
-                  strokeidth="2"
+                  stroke-linejoin="round"
+                  stroke-width="2"
                 ></polygon>
               </svg>
               <a href="\">Messages</a>
             </li>
-            <li className="flex gap-5 items-center space-between">
+            <li className="  flex gap-5 items-center space-between  hover:bg-gray-800 rounded-full p-2 transition-all">
               <svg
                 aria-label="Notifications"
                 className=""
@@ -484,7 +540,7 @@ export default function Home() {
               </svg>
               <a href="">Notifications</a>
             </li>
-            <li className="flex gap-5 items-center space-between">
+            <li className="  flex gap-5 items-center space-between  hover:bg-gray-800 rounded-full p-2 transition-all">
               <svg
                 aria-label="New post"
                 className=""
@@ -530,7 +586,7 @@ export default function Home() {
                 Create
               </button>
             </li>
-            <li className="flex gap-5 items-center space-between">
+            <li className="  flex gap-5 items-center space-between  hover:bg-gray-800 rounded-full p-2 transition-all">
               <svg
                 height="22"
                 viewBox="0 0 24 24"
@@ -710,193 +766,207 @@ export default function Home() {
               <p>username</p>
             </div>
           </div>
-          {post?.map((item, index) => {
-            return (
-              <div
-                key={index}
-                className="user_post w-12/12 flex relative   flex-col items-center"
-              >
-                <div className="timeline_post border-b border-gray-800 w-8/12 mt-12 ">
-                  <div className="post_user ">
-                    <div className="user_datials flex  ">
-                      <div className="user flex w-full justify-between">
-                        <div className="post_user flex gap-3">
-                          <Image
-                            src={user1}
-                            width={50}
-                            height={50}
-                            className="rounded-full"
-                            alt="user"
-                          />
-                          <div className="username_time">
-                            <p>
-                              mohammad0019 <span>.1h</span>
-                            </p>
-                            <span className="text-sm">orginal audio</span>
+          {post && post.length > 0 ? (
+            [...post].reverse().map((item, index) => {
+              return (
+                <>
+                  <div className="text-center">
+                    {loading && <p className="text-pink-700">loading...</p>}
+                  </div>
+                  <div
+                    key={index}
+                    className="user_post w-12/12 flex relative   flex-col items-center"
+                  >
+                    <div className="timeline_post border-b border-gray-800 w-8/12 mt-12 ">
+                      <div className="post_user ">
+                        <div className="user_datials flex  ">
+                          <div className="user flex w-full justify-between">
+                            <div className="post_user flex gap-3">
+                              <Image
+                                src={user1}
+                                width={50}
+                                height={50}
+                                className="rounded-full"
+                                alt="user"
+                              />
+                              <div className="username_time">
+                                <p>
+                                  mohammad0019 <span>.1h</span>
+                                </p>
+                                <span className="text-sm">orginal audio</span>
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={() => handleMoreOption(item._id)}
+                              className="w-22"
+                            >
+                              <svg
+                                aria-label="More options"
+                                class="_ab6-"
+                                color="rgb(115, 115, 115)"
+                                fill="#fff"
+                                height="24"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="24"
+                              >
+                                <circle cx="12" cy="12" r="1.5"></circle>
+                                <circle cx="6" cy="12" r="1.5"></circle>
+                                <circle cx="18" cy="12" r="1.5"></circle>
+                              </svg>
+                            </button>
                           </div>
                         </div>
+                      </div>
+                      <div className="post mt-2">
+                        <Image
+                          src={item.photo}
+                          className="w-full"
+                          width={500}
+                          height={500}
+                          style={{ objectFit: "contain" }}
+                          alt="post_img"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="post_comment my-3 ">
+                        <div className="icon flex justify-between my-3 items-center">
+                          <div className="sec_1 flex items-center gap-3">
+                            <a href="">
+                              <svg
+                                aria-label="Like"
+                                class="x1lliihq x1n2onr6"
+                                color="rgb(142, 142, 142)"
+                                fill="#fff"
+                                height="24"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="24"
+                              >
+                                <title>Like</title>
+                                <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path>
+                              </svg>
+                            </a>
+                            <a href="">
+                              <svg
+                                aria-label="Comment"
+                                class="x1lliihq x1n2onr6"
+                                color="rgb(168, 168, 168)"
+                                fill="rgb(168, 168, 168)"
+                                height="24"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="24"
+                              >
+                                <title>Comment</title>
+                                <path
+                                  d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                ></path>
+                              </svg>
+                            </a>
+                            <a href="">
+                              <svg
+                                aria-label="Share Post"
+                                class="x1lliihq x1n2onr6"
+                                color="rgb(168, 168, 168)"
+                                fill="rgb(168, 168, 168)"
+                                height="24"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="24"
+                              >
+                                <title>Share Post</title>
+                                <line
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  x1="22"
+                                  x2="9.218"
+                                  y1="3"
+                                  y2="10.083"
+                                ></line>
+                                <polygon
+                                  fill="none"
+                                  points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"
+                                  stroke="currentColor"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                ></polygon>
+                              </svg>
+                            </a>
+                          </div>
+                          <div className="sec_2">
+                            <a href="">
+                              <svg
+                                aria-label="Save"
+                                class="x1lliihq x1n2onr6"
+                                color="rgb(115, 115, 115)"
+                                fill="#fff(115, 115, 115)"
+                                height="24"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="24"
+                              >
+                                <title>Save</title>
+                                <polygon
+                                  fill="#fff"
+                                  points="20 21 12 13.44 4 21 4 3 20 3 20 21"
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeidth="2"
+                                ></polygon>
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
+                        <h1 className=" w-60 truncate">{item.caption}</h1>
+                        <p>emon_farhabe 🖤🥀🖤</p>
+                        <p className="text-gray-400 text-sm">
+                          View all 4 comments
+                        </p>
 
-                        <button
-                          onClick={() => handleMoreOption(item._id)}
-                          className="w-22"
-                        >
-                          <svg
-                            aria-label="More options"
-                            class="_ab6-"
-                            color="rgb(115, 115, 115)"
-                            fill="#fff"
-                            height="24"
-                            role="img"
-                            viewBox="0 0 24 24"
-                            width="24"
-                          >
-                            <circle cx="12" cy="12" r="1.5"></circle>
-                            <circle cx="6" cy="12" r="1.5"></circle>
-                            <circle cx="18" cy="12" r="1.5"></circle>
-                          </svg>
-                        </button>
+                        <div className="form flex justify-between">
+                          <input
+                            className=" text-sm bg-gray-900 py-1 w-full pl-3 my-3 focus:outline-none"
+                            type="text"
+                            name=""
+                            placeholder="Add comments..."
+                            id=""
+                          />
+                          <a href="">
+                            <svg
+                              aria-label="Emoji"
+                              class="x1lliihq x1n2onr6"
+                              color="rgb(115, 115, 115)"
+                              fill="#fff(115, 115, 115)"
+                              height="13"
+                              role="img"
+                              viewBox="0 0 24 24"
+                              width="13"
+                            >
+                              <title>Emoji</title>
+                              <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path>
+                            </svg>
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div className="post mt-2">
-                    <Image
-                      src={item.photo}
-                      className="w-full"
-                      width={500}
-                      height={500}
-                      style={{ objectFit: "contain" }}
-                      alt="post_img"
-                    />
-                  </div>
-                  <div className="post_comment my-3 ">
-                    <div className="icon flex justify-between my-3 items-center">
-                      <div className="sec_1 flex items-center gap-3">
-                        <a href="">
-                          <svg
-                            aria-label="Like"
-                            class="x1lliihq x1n2onr6"
-                            color="rgb(142, 142, 142)"
-                            fill="#fff"
-                            height="24"
-                            role="img"
-                            viewBox="0 0 24 24"
-                            width="24"
-                          >
-                            <title>Like</title>
-                            <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path>
-                          </svg>
-                        </a>
-                        <a href="">
-                          <svg
-                            aria-label="Comment"
-                            class="x1lliihq x1n2onr6"
-                            color="rgb(168, 168, 168)"
-                            fill="rgb(168, 168, 168)"
-                            height="24"
-                            role="img"
-                            viewBox="0 0 24 24"
-                            width="24"
-                          >
-                            <title>Comment</title>
-                            <path
-                              d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                            ></path>
-                          </svg>
-                        </a>
-                        <a href="">
-                          <svg
-                            aria-label="Share Post"
-                            class="x1lliihq x1n2onr6"
-                            color="rgb(115, 115, 115)"
-                            fill="#fff(115, 115, 115)"
-                            height="24"
-                            role="img"
-                            viewBox="0 0 24 24"
-                            width="24"
-                          >
-                            <title>Share Post</title>
-                            <line
-                              fill="#fff"
-                              stroke="currentColor"
-                              strokeLinejoin="round"
-                              strokeidth="2"
-                              x1="22"
-                              x2="9.218"
-                              y1="3"
-                              y2="10.083"
-                            ></line>
-                            <polygon
-                              fill="#fff"
-                              points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"
-                              stroke="currentColor"
-                              strokeLinejoin="round"
-                              strokeidth="2"
-                            ></polygon>
-                          </svg>
-                        </a>
-                      </div>
-                      <div className="sec_2">
-                        <a href="">
-                          <svg
-                            aria-label="Save"
-                            class="x1lliihq x1n2onr6"
-                            color="rgb(115, 115, 115)"
-                            fill="#fff(115, 115, 115)"
-                            height="24"
-                            role="img"
-                            viewBox="0 0 24 24"
-                            width="24"
-                          >
-                            <title>Save</title>
-                            <polygon
-                              fill="#fff"
-                              points="20 21 12 13.44 4 21 4 3 20 3 20 21"
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeidth="2"
-                            ></polygon>
-                          </svg>
-                        </a>
-                      </div>
-                    </div>
-                    <h1>{item.caption}</h1>
-                    <p>emon_farhabe 🖤🥀🖤</p>
-                    <p className="text-gray-400 text-sm">View all 4 comments</p>
-
-                    <div className="form flex justify-between">
-                      <input
-                        className=" text-sm bg-gray-900 py-1 w-full pl-3 my-3 focus:outline-none"
-                        type="text"
-                        name=""
-                        placeholder="Add comments..."
-                        id=""
-                      />
-                      <a href="">
-                        <svg
-                          aria-label="Emoji"
-                          class="x1lliihq x1n2onr6"
-                          color="rgb(115, 115, 115)"
-                          fill="#fff(115, 115, 115)"
-                          height="13"
-                          role="img"
-                          viewBox="0 0 24 24"
-                          width="13"
-                        >
-                          <title>Emoji</title>
-                          <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                </>
+              );
+            })
+          ) : (
+            <div className="text-center my-5">
+              <p>No post</p>
+            </div>
+          )}
         </div>
         <div className="user_profile  w-80">
           <div className="user">
