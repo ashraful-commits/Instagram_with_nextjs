@@ -1,7 +1,7 @@
 import mondoDBconncetion from "@/confige/mongodb";
 import Post from "@/modles/postModle";
 import { NextResponse } from "next/server";
-
+// git single data and update
 export const PUT = async (request, { params }) => {
   try {
     mondoDBconncetion();

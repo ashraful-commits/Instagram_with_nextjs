@@ -17,10 +17,7 @@ import { createPost, deletePost, editPost, getAllpost } from "./postapi";
 import { getAllState } from "./postSlice";
 import axios from "axios";
 import swal from "sweetalert";
-export const metadata = {
-  title: "Home",
-  description: "Home is here",
-};
+
 export default function Home() {
   const [show, setShow] = useState(false);
   const [option, setOption] = useState(false);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Post from "@/modles/postModle";
 import mondoDBconncetion from "@/confige/mongodb";
+//======================================= get all data of post
 export const GET = async () => {
   try {
     mondoDBconncetion();
@@ -11,6 +12,7 @@ export const GET = async () => {
     return NextResponse.json({ error: error.message });
   }
 };
+//==============================post or create post for instagram
 export const POST = async (request) => {
   try {
     mondoDBconncetion();
@@ -22,22 +24,8 @@ export const POST = async (request) => {
     return NextResponse.json({ error: error.message });
   }
 };
-export const PUT = async (request) => {
-  try {
-    const data = request.json();
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    mondoDBconncetion();
-    const post = await Post.findByIdAndUpdate(
-      { _id: id },
-      { ...data },
-      { new: true }
-    );
-    return NextResponse.json({ post });
-  } catch (error) {
-    return NextResponse.json({ error: error.message });
-  }
-};
+
+//================================== delete single data
 export const DELETE = async (request) => {
   try {
     const { searchParams } = new URL(request.url);
